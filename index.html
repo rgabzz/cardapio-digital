@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Sabor & Arte — cardápio digital com sistema de pedidos. Navegue pelas categorias, monte seu pedido e finalize com praticidade." />
+  <meta name="theme-color" content="#141210" />
+  <title>Sabor &amp; Arte — Cardápio Digital</title>
+  <link rel="icon" href="public/icon.svg" type="image/svg+xml" />
+  <link rel="icon" href="public/icon-light-32x32.png" media="(prefers-color-scheme: light)" sizes="32x32" />
+  <link rel="icon" href="public/icon-dark-32x32.png" media="(prefers-color-scheme: dark)" sizes="32x32" />
+  <link rel="apple-touch-icon" href="public/apple-icon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <!-- ===================== CABEÇALHO ===================== -->
+  <header class="site-header" id="topo">
+    <div class="header-inner">
+      <a href="#topo" class="brand" aria-label="Sabor e Arte, início">
+        <span class="brand-mark" aria-hidden="true">S&amp;A</span>
+        <span class="brand-text">
+          <strong>Sabor &amp; Arte</strong>
+          <small>Cozinha Contemporânea</small>
+        </span>
+      </a>
+
+      <nav class="cat-nav" aria-label="Categorias do cardápio" id="catNav"></nav>
+
+      <div class="header-actions">
+        <button class="icon-btn" id="themeToggle" type="button" aria-label="Alternar tema claro/escuro" title="Alternar tema">
+          <span class="theme-icon" aria-hidden="true"></span>
+        </button>
+        <button class="cart-btn" id="openCart" type="button" aria-label="Abrir Meu Pedido">
+          <span class="cart-icon" aria-hidden="true">🛒</span>
+          <span>Meu Pedido</span>
+          <span class="cart-badge" id="cartBadge" aria-hidden="true">0</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- ===================== HERO ===================== -->
+    <section class="hero" aria-label="Boas-vindas">
+      <div class="hero-media" role="img" aria-label="Mesa de restaurante requintada com pratos gourmet"></div>
+      <div class="hero-overlay"></div>
+      <div class="hero-content">
+        <p class="hero-eyebrow">Bem-vindo ao</p>
+        <h1>Sabor &amp; Arte</h1>
+        <p class="hero-sub">Um cardápio digital completo. Explore mais de 150 pratos, monte seu pedido e finalize direto da sua mesa.</p>
+        <div class="hero-cta">
+          <a href="#cardapio" class="btn btn-primary">Ver cardápio</a>
+          <button class="btn btn-ghost" id="heroCart" type="button">Meu pedido</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== CARDÁPIO ===================== -->
+    <section id="cardapio" class="section">
+      <div class="section-head">
+        <h2>Nosso Cardápio</h2>
+        <p>Pesquise, filtre e adicione seus favoritos ao pedido.</p>
+      </div>
+
+      <!-- Barra de ferramentas: busca, filtro, ordenação, faixa de preço -->
+      <div class="toolbar" role="search">
+        <div class="field search-field">
+          <span class="field-icon" aria-hidden="true">🔎</span>
+          <input type="search" id="searchInput" placeholder="Pesquisar por nome do prato..." aria-label="Pesquisar produto pelo nome" autocomplete="off" />
+        </div>
+
+        <div class="field">
+          <label for="categoryFilter">Categoria</label>
+          <select id="categoryFilter" aria-label="Filtrar por categoria">
+            <option value="TODAS">Todas as categorias</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="sortSelect">Ordenar</label>
+          <select id="sortSelect" aria-label="Ordenar produtos">
+            <option value="padrao">Padrão</option>
+            <option value="preco-asc">Menor preço</option>
+            <option value="preco-desc">Maior preço</option>
+            <option value="nome-asc">Nome (A–Z)</option>
+          </select>
+        </div>
+
+        <div class="field price-field">
+          <label for="priceRange">Preço até <span id="priceValue">R$ 0</span></label>
+          <input type="range" id="priceRange" min="0" max="100" step="1" value="100" aria-label="Filtrar por preço máximo" />
+        </div>
+      </div>
+
+      <p class="results-info" id="resultsInfo" aria-live="polite"></p>
+
+      <!-- Cardápio gerado dinamicamente pelo JavaScript -->
+      <div id="menuContainer"></div>
+
+      <p class="empty-state" id="emptyState" hidden>Nenhum prato encontrado com esses filtros. Tente ajustar a pesquisa.</p>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div>
+        <strong>Sabor &amp; Arte</strong>
+        <p>Cardápio digital desenvolvido para a atividade de Programação para Internet.</p>
+      </div>
+      <p class="footer-tech">Feito com HTML, CSS e JavaScript.</p>
+    </div>
+  </footer>
+
+  <!-- ===================== DRAWER: MEU PEDIDO ===================== -->
+  <div class="overlay" id="overlay" hidden></div>
+
+  <aside class="cart-drawer" id="cartDrawer" aria-label="Meu Pedido" aria-hidden="true">
+    <div class="drawer-head">
+      <h2>Meu Pedido</h2>
+      <button class="icon-btn" id="closeCart" type="button" aria-label="Fechar Meu Pedido">✕</button>
+    </div>
+
+    <div class="drawer-body" id="cartBody">
+      <p class="cart-empty" id="cartEmpty">Seu pedido está vazio.<br />Adicione pratos do cardápio para começar.</p>
+      <ul class="cart-list" id="cartList"></ul>
+    </div>
+
+    <div class="drawer-foot" id="cartFoot" hidden>
+      <label class="coupon">
+        <span>Cupom de desconto</span>
+        <span class="coupon-row">
+          <input type="text" id="couponInput" placeholder="Ex.: BEMVINDO10" autocomplete="off" />
+          <button type="button" id="applyCoupon" class="btn btn-small">Aplicar</button>
+        </span>
+        <small id="couponMsg" class="coupon-msg"></small>
+      </label>
+
+      <label class="tip-toggle">
+        <input type="checkbox" id="garcomCheck" checked />
+        <span>Incluir 10% do garçom <small>(opcional)</small></span>
+      </label>
+
+      <dl class="totals">
+        <div><dt>Subtotal</dt><dd id="subtotalOut">R$ 0,00</dd></div>
+        <div class="totals-discount" id="discountRow" hidden><dt>Desconto</dt><dd id="discountOut">- R$ 0,00</dd></div>
+        <div class="totals-tip" id="tipRow"><dt>Garçom (10%)</dt><dd id="tipOut">R$ 0,00</dd></div>
+        <div class="totals-total"><dt>Total</dt><dd id="totalOut">R$ 0,00</dd></div>
+      </dl>
+
+      <button class="btn btn-primary btn-block" id="goCheckout" type="button">Finalizar pedido</button>
+    </div>
+  </aside>
+
+  <!-- ===================== MODAL: FINALIZAÇÃO ===================== -->
+  <div class="modal" id="checkoutModal" hidden role="dialog" aria-modal="true" aria-labelledby="checkoutTitle">
+    <div class="modal-card">
+      <div class="modal-head">
+        <h2 id="checkoutTitle">Finalizar Pedido</h2>
+        <button class="icon-btn" id="closeCheckout" type="button" aria-label="Fechar">✕</button>
+      </div>
+
+      <form id="checkoutForm" class="checkout-form" novalidate>
+        <div class="form-grid">
+          <label class="form-field">
+            <span>Nome do cliente *</span>
+            <input type="text" id="clientName" name="clientName" required placeholder="Seu nome" autocomplete="name" />
+          </label>
+          <label class="form-field">
+            <span>Número da mesa *</span>
+            <input type="number" id="tableNumber" name="tableNumber" required min="1" placeholder="Ex.: 12" />
+          </label>
+        </div>
+
+        <label class="form-field">
+          <span>Observações do pedido</span>
+          <textarea id="notes" name="notes" rows="2" placeholder="Ex.: sem cebola, ponto da carne, alergias..."></textarea>
+        </label>
+
+        <fieldset class="pay-methods">
+          <legend>Forma de pagamento</legend>
+          <label class="pay-opt"><input type="radio" name="payment" value="Pix" checked /> <span>Pix</span></label>
+          <label class="pay-opt"><input type="radio" name="payment" value="Cartão" /> <span>Cartão</span></label>
+          <label class="pay-opt"><input type="radio" name="payment" value="Dinheiro" /> <span>Dinheiro</span></label>
+        </fieldset>
+
+        <div class="form-field cash-field" id="cashField" hidden>
+          <span>Troco para quanto?</span>
+          <input type="number" id="cashAmount" min="0" step="0.01" placeholder="Ex.: 250,00" />
+          <small id="changeMsg" class="change-msg"></small>
+        </div>
+
+        <div class="checkout-summary" id="checkoutSummary"></div>
+
+        <p class="form-error" id="formError" hidden></p>
+
+        <button type="submit" class="btn btn-primary btn-block">Confirmar pedido</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ===================== MODAL: CONFIRMAÇÃO ===================== -->
+  <div class="modal" id="confirmModal" hidden role="dialog" aria-modal="true" aria-labelledby="confirmTitle">
+    <div class="modal-card confirm-card">
+      <div class="confirm-check" aria-hidden="true">✓</div>
+      <h2 id="confirmTitle">Pedido confirmado!</h2>
+      <p class="confirm-order">Pedido <strong id="orderNumber">#000</strong></p>
+      <div class="confirm-summary" id="confirmSummary"></div>
+      <button class="btn btn-primary btn-block" id="newOrder" type="button">Fazer novo pedido</button>
+    </div>
+  </div>
+
+  <script src="js/produtos.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
